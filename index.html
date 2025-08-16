@@ -1,165 +1,20 @@
-<!doctype html>
-<html lang="es">
+<!Doctype html>
+<html>
+<meta charset="utf-8">
+
 <head>
-  <meta charset="utf-8" />
-  <title>Demo CZML - Bogotá, Cali, Medellín, Barranquilla</title>
-
-  <!-- Cesium desde un CDN (unpkg) -->
-  <link href="https://unpkg.com/cesium/Build/Cesium/Widgets/widgets.css" rel="stylesheet" />
-  <style>
-    html, body, #cesiumContainer {
-      width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden;
-    }
-    .top-right-note {
-      position: absolute;
-      top: 8px;
-      right: 12px;
-      z-index: 1;
-      background: rgba(255,255,255,0.9);
-      padding: 6px 10px;
-      border-radius: 6px;
-      font-family: sans-serif;
-      font-size: 13px;
-    }
-  </style>
+    <meta charset="utf-8">
+    <!-- Include the CesiumJS JavaScript and CSS files -->
+    <script src="https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/Cesium.js"></script>
+    <link href="https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
 </head>
+
 <body>
-  <div class="top-right-note">Si no ves nada: espera que la línea de tiempo avance (botón play) o presiona "Zoom to" en la consola (f12) si hace falta.</div>
-  <div id="cesiumContainer"></div>
 
-  <script src="https://unpkg.com/cesium/Build/Cesium/Cesium.js"></script>
-  <script>
-    // --- CZML (array) con las 4 entidades que ya tenías ---
-    const czmlData = [
-      {
-        "id": "document",
-        "name": "Ejemplo CZML",
-        "version": "1.0",
-        "clock": {
-          "interval": "2025-08-01T00:00:00Z/2025-08-29T23:59:59Z",
-          "currentTime": "2025-08-01T01:00:00Z",
-          "multiplier": 90000
-        }
-      },
-      {
-        "id": "shape1",
-        "name": "Bogota",
-        "position": { "cartographicDegrees": [-74.096, 4.629, 0] },
-        "ellipse": {
-          "semiMinorAxis": 100000,
-          "semiMajorAxis": 100000,
-          "height": 0,
-          "extrudedHeight": [
-            { "interval": "2025-08-01T00:00:00Z/2025-08-06T23:59:59Z", "number": 100 },
-            { "interval": "2025-08-07T00:00:00Z/2025-08-13T23:59:59Z", "number": 300 },
-            { "interval": "2025-08-14T00:00:00Z/2025-08-20T23:59:59Z", "number": 500 },
-            { "interval": "2025-08-21T00:00:00Z/2025-08-26T23:59:59Z", "number": 700 },
-            { "interval": "2025-08-27T00:00:00Z/2025-08-29T23:00:00Z", "number": 900 }
-          ],
-          "material": { "solidColor": { "color": { "rgba": [255, 0, 0, 120] } } },
-          "extrudedHeightReference": "RELATIVE_TO_GROUND"
-        }
-      },
-      {
-        "id": "shape2",
-        "name": "Cali",
-        "position": { "cartographicDegrees": [-76.532, 3.4516, 0] },
-        "box": {
-          "dimensions": [
-            { "interval": "2025-08-01T00:00:00Z/2025-08-06T23:59:59Z", "cartesian": [200000.0, 200000.0, 100.0] },
-            { "interval": "2025-08-07T00:00:00Z/2025-08-13T23:59:59Z", "cartesian": [200000.0, 200000.0, 300.0] },
-            { "interval": "2025-08-14T00:00:00Z/2025-08-20T23:59:59Z", "cartesian": [200000.0, 200000.0, 500.0] },
-            { "interval": "2025-08-21T00:00:00Z/2025-08-26T23:59:59Z", "cartesian": [200000.0, 200000.0, 700.0] },
-            { "interval": "2025-08-27T00:00:00Z/2025-08-29T23:00:00Z", "cartesian": [200000.0, 200000.0, 900.0] }
-          ],
-          "material": { "solidColor": { "color": { "rgba": [0, 0, 255, 120] } } }
-        }
-      },
-      {
-        "id": "shape3",
-        "name": "Medellin",
-        "position": { "cartographicDegrees": [-75.5636, 6.2518, 0] },
-        "cylinder": {
-          "length": [
-            { "interval": "2025-08-01T00:00:00Z/2025-08-06T23:59:59Z", "number": 100.0 },
-            { "interval": "2025-08-07T00:00:00Z/2025-08-13T23:59:59Z", "number": 300.0 },
-            { "interval": "2025-08-14T00:00:00Z/2025-08-20T23:59:59Z", "number": 500.0 },
-            { "interval": "2025-08-21T00:00:00Z/2025-08-26T23:59:59Z", "number": 700.0 },
-            { "interval": "2025-08-27T00:00:00Z/2025-08-29T23:00:00Z", "number": 900.0 }
-          ],
-          "topRadius": 50000.0,
-          "bottomRadius": 50000.0,
-          "material": { "solidColor": { "color": { "rgba": [0, 255, 0, 120] } } }
-        }
-      },
-      {
-        "id": "shape4",
-        "name": "Barranquilla",
-        "polygon": {
-          "positions": {
-            "cartographicDegrees": [
-              -74.8060, 10.9878, 0,
-              -74.7060, 10.9878, 0,
-              -74.7060, 11.0878, 0,
-              -74.8060, 11.0878, 0
-            ]
-          },
-          "height": 0,
-          "extrudedHeight": [
-            { "interval": "2025-08-01T00:00:00Z/2025-08-06T23:59:59Z", "number": 100 },
-            { "interval": "2025-08-07T00:00:00Z/2025-08-13T23:59:59Z", "number": 300 },
-            { "interval": "2025-08-14T00:00:00Z/2025-08-20T23:59:59Z", "number": 500 },
-            { "interval": "2025-08-21T00:00:00Z/2025-08-26T23:59:59Z", "number": 700 },
-            { "interval": "2025-08-27T00:00:00Z/2025-08-29T23:00:00Z", "number": 900 }
-          ],
-          "material": { "solidColor": { "color": { "rgba": [255, 165, 0, 120] } } },
-          "outline": true,
-          "outlineColor": { "rgba": [0,0,0,200] }
-        }
-      }
-    ];
+    <div id="cesiumContainer"></div>
 
-    // --- Inicializa Cesium ---
-    const viewer = new Cesium.Viewer('cesiumContainer', {
-      timeline: true,
-      animation: true,
-      shouldAnimate: true,
-      imageryProvider: new Cesium.OpenStreetMapImageryProvider(), // evita requerir token Cesium Ion
-      baseLayerPicker: true
-    });
-
-    // Carga el CZML directamente desde la variable
-    Cesium.CzmlDataSource.load(czmlData).then(function(dataSource) {
-      viewer.dataSources.add(dataSource);
-
-      // Ajusta el reloj del viewer al clock del CZML document si existe
-      if (czmlData[0] && czmlData[0].clock) {
-        const czmlClock = czmlData[0].clock;
-        viewer.clock.startTime = Cesium.JulianDate.fromIso8601(czmlClock.interval.split('/')[0]);
-        viewer.clock.stopTime  = Cesium.JulianDate.fromIso8601(czmlClock.interval.split('/')[1]);
-        viewer.clock.currentTime = Cesium.JulianDate.fromIso8601(czmlClock.currentTime || czmlClock.interval.split('/')[0]);
-        viewer.clock.multiplier = czmlClock.multiplier || 1;
-        viewer.clock.clockRange = Cesium.ClockRange.LOOP_STOP; // que vuelva a iniciar al terminar
-      }
-
-      // Centra/zoom a las entidades cargadas
-      viewer.zoomTo(dataSource).then(function() {
-        // después de centrar, baja un poco la cámara para que se aprecien las extrusiones
-        const center = viewer.camera.positionCartographic;
-        viewer.camera.moveBackward(50000);
-      });
-
-    }).catch(function(err){
-      console.error('Error cargando CZML:', err);
-      alert('Ocurrió un error cargando el CZML. Revisa la consola (F12) para más detalles.');
-    });
-
-    // Atajo en consola: window.zoomToData() para forzar zoom si lo necesitas
-    window.zoomToData = function() {
-      if (viewer && viewer.dataSources && viewer.dataSources.length > 0) {
-        viewer.zoomTo(viewer.dataSources).catch(()=>console.warn('zoomTo falló'));
-      }
-    };
-  </script>
 </body>
+<script src="program.js"></script>
+
 </html>
+
